@@ -1,0 +1,41 @@
+<script>
+
+  const GITHUB_WORKER_URL = '';
+
+	const code = new URL(location.href).searchParams.get('code');
+	const error = new URL(location.href).searchParams.get('error');
+
+	if (code) {
+	// remove ?code=... from URL
+		const path = location.pathname + location.search.replace(/\bcode=\w+/, '').replace(/\?$/, '');
+		history.pushState({}, '', path);
+		login(code);
+	}
+
+	if (error) {
+		location.replace('/');
+	}
+
+  async function login(code) {
+    try {
+      const response = await fetch(GITHUB_WORKER_URL, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({ code }),
+      });
+
+      const result = await response.text();
+
+      if (result.error) {
+        alert(JSON.stringify(result, null, 2));
+			}     
+		} catch (error) {
+      alert(error);
+    }
+  }
+
+</script>
+
